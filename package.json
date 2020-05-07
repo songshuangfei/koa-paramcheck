@@ -1,7 +1,7 @@
 {
-  "name": "koa-requestprecheck",
+  "name": "koa-paramcheck",
   "version": "0.1.0",
-  "description": "request param precheck",
+  "description": "A koa middleware for checking querystring and body.",
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc"

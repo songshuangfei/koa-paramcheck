@@ -56,7 +56,7 @@ function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultC
   if (ctx.request.headers['content-type'] !== 'application/json')
     return false;
   try {
-    JSON.stringify(ctx.request.rawBody);
+    JSON.parse(ctx.request.rawBody);
     return true
   } catch (error) {
     console.error(error)

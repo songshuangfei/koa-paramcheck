@@ -15,14 +15,17 @@ import Router from "koa-router";
 import { jsonBodyCheck, queryCheck } from "koa-paramcheck";
 
 const app = new Koa();
-app.use(bodyParser()); //This is neccessary, or bodyCheck will not work
+
+app.use(bodyParser()); //This step is needed, or jsonBodyCheck will not work
 
 const router = new Router();
+
 router.get("/search", queryCheck([
   {
     type: "string",
-    key: "num", regExp: /^[0-9]*$/,
-    message: "{{path}} must be number string"
+    key: "num", 
+    regExp: /^[0-9]*$/,
+    message: "{{path}} must be a number string"
   },
   {
     type: "array", 
@@ -62,9 +65,10 @@ router.post("/register", jsonBodyCheck([
 ]), async (ctx) => {
   ctx.body = { succeed: true }
 })
-app.use(router.routes()).use(router.allowedMethods());
-app.listen("8081");
 
+app.use(router.routes()).use(router.allowedMethods());
+
+app.listen("8081");
 ```
 In typescript, you can define the rules clearly. 
 ```ts
@@ -109,7 +113,6 @@ router.post("/contacts", jsonBodyCheck([
 })
 ```
 ## test
-
 ```bash
 $ curl "http://127.0.0.1:8081/search?num=123s&strs=abc&strs=abc1"
 {"queryError":"num must be number string; strs[1] dose not match /^[a-z]+$/; "}

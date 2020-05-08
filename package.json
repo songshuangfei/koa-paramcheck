@@ -1,11 +1,10 @@
 {
   "name": "koa-paramcheck",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A koa middleware for checking querystring and body.",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "tsc",
-    "prepare":"npm run build"
+    "build": "tsc"
   },
   "keywords": ["koa"],
   "author": "Song Shuangfei",

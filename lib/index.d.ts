@@ -29,7 +29,16 @@ interface ObjectRule {
     type: "object";
     attrRules: Array<AttrRule>;
 }
+declare type QueryStringRule = StringRule;
+interface QueryArrayRule {
+    type: "array";
+    itemRule: {
+        regExp?: RegExp;
+        message?: string;
+    };
+}
 export declare type Rule = StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule;
+export declare type QueryRule = QueryStringRule | QueryArrayRule;
 declare type AttrRule = StringRule & {
     key: string;
 } | NumberRule & {
@@ -43,24 +52,15 @@ declare type AttrRule = StringRule & {
 } | AnyRule & {
     key: string;
 };
-declare type QueryStringRule = StringRule;
-interface QueryArrayRule {
-    type: "array";
-    itemRule: {
-        regExp?: RegExp;
-        message?: string;
-    };
-}
-export declare type QueryRule = QueryStringRule | QueryArrayRule;
 declare type AttrQueryRule = QueryStringRule & {
     key: string;
 } | QueryArrayRule & {
     key: string;
 };
 /**
- * bodyCheck() precheck middleware for body;
+ * jsonBodyCheck() precheck middleware for JSON body;
  */
-export declare function bodyCheck(rules: Array<AttrRule>): (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => Promise<void>;
+export declare function jsonBodyCheck(rules: Array<AttrRule>): (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => Promise<void>;
 /**
  * queryCheck(), precheck middleware for query;
  */

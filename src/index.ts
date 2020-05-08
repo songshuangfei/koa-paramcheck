@@ -193,6 +193,7 @@ function objectHandler(attrPath: AttrPath, value: any, rule: ObjectRule): string
 export function jsonBodyCheck(rules: Array<AttrRule>) {
   return async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => {
     if (!isJSONBody(ctx)) {
+      ctx.status = 400;
       ctx.body = { bodyError: "body must be a JSON" };
       return
     }

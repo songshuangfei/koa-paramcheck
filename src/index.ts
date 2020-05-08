@@ -198,7 +198,7 @@ export function jsonBodyCheck(rules: Array<AttrRule>) {
       ctx.body = { bodyError: "body must be a JSON" };
       return
     }
-    const reqBody = JSON.stringify(ctx.request.rawBody);
+    const reqBody = JSON.parse(ctx.request.rawBody);
     const bodyErrMsg = objectHandler([], reqBody, {
       type: "object",
       attrRules: rules,

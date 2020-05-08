@@ -25,7 +25,9 @@ router.get("/search", queryCheck([
     message: "{{path}} must be number string"
   },
   {
-    type: "array", key: "strs", itemRule: {
+    type: "array", 
+    key: "strs", 
+    itemRule: {
       regExp: /^[a-z]+$/,
     }
   },
@@ -43,12 +45,16 @@ router.post("/register", jsonBodyCheck([
     message: "{{path}} must be a phone number"
   },
   {
-    type: "array", key: "tags", itemRule: {
+    type: "array", 
+    key: "tags", 
+    itemRule: {
       type: "string"
     }
   },
   {
-    type: "object", key: "info", attrRules: [
+    type: "object", 
+    key: "info", 
+    attrRules: [
       { type: "string", key: "nickName" },
       { type: "number", key: "age", min: 0 },
     ]
@@ -62,7 +68,7 @@ app.listen("8081");
 ```
 In typescript, you can define the rules clearly. 
 ```ts
-import { bodyCheck, queryCheck, Rule, QueryRule } from "koa-paramcheck";
+import { jsonBodyCheck, queryCheck, Rule, QueryRule } from "koa-paramcheck";
 
 const numberStringRule: QueryRule = {
   type: "string",
@@ -85,9 +91,15 @@ const phoneNumberRule: Rule = {
 
 router.post("/contacts", jsonBodyCheck([
   { key: "myPhoneNumber", ...phoneNumberRule },
-  { key: "myFriendsPhoneNumbers", type: "array", itemRule: phoneNumberRule },
   {
-    key: "myFamilyPhoneNumbers", type: "object", attrRules: [
+    key: "myFriendsPhoneNumbers",
+    type: "array",
+    itemRule: phoneNumberRule
+  },
+  {
+    key: "myFamilyPhoneNumbers",
+    type: "object",
+    attrRules: [
       { key: "myFather", ...phoneNumberRule },
       { key: "myMother", ...phoneNumberRule }
     ]

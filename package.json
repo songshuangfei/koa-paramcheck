@@ -1,6 +1,6 @@
 {
   "name": "koa-paramcheck",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A koa middleware for checking querystring and body.",
   "main": "./lib/index.js",
   "scripts": {

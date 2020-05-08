@@ -2,6 +2,17 @@
  * koa-paramcheck
  */
 import * as Koa from "koa";
+import * as Parse from "co-body";
+
+declare module "koa" {
+  interface Request {
+    // if http parameter pass the check, it will be parse and set to here
+    passedParams:{
+      query?: any,
+      body?: any
+    }
+  }
+}
 
 /**
  * rules used to check
@@ -28,6 +39,7 @@ type AttrRule = StringRule & { key: string } | NumberRule & { key: string } | Bo
 type AttrQueryRule = QueryStringRule & { key: string } | QueryArrayRule & { key: string };
 
 type AttrPath = Array<string | number>;
+
 /**
  * join attributes to a string
  * ["a",1,"b",0] -> "a[1].b[0]"
@@ -50,17 +62,17 @@ function getRange(min: number | undefined, max: number | undefined): string {
 }
 
 /**
- * Judge if the `ctx.request.rawBody` provide by koa-bodyparser is a application/json
+ * Judge if the body  is a application/json
  */
-function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>){
+async function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>):Promise< [boolean, any]> {
   if (ctx.request.headers['content-type'] !== 'application/json')
-    return false;
+    return [false, null];
   try {
-    JSON.parse(ctx.request.rawBody);
-    return true
+    const res = await Parse.json(ctx.req);
+    return [true, res]
   } catch (error) {
     console.error(error)
-    return false
+    return [false, null]
   }
 }
 
@@ -105,11 +117,15 @@ function anyHandler(attrPath: AttrPath, value: any, rule: AnyRule): string | nul
   }
   return null
 }
-
+/**
+ * arrayHandler() check the ayyary data according to ArrayRule
+ * @param attrPath 
+ * @param value 
+ * @param rule 
+ */
 function arrayHandler(attrPath: AttrPath, value: any, rule: ArrayRule): string | null {
   if (!(value instanceof Array))
     return `${joinAttrPath(attrPath)} must be an Array; `;
-
   const errs: string[] = [];
   for (const arrayItem of value.entries()) {
     const nextAttrPath = [...attrPath, arrayItem[0]];
@@ -141,8 +157,9 @@ function arrayHandler(attrPath: AttrPath, value: any, rule: ArrayRule): string |
   return errs.join("");
 }
 
+
 /**
- * objectHandler() object check
+ * objectHandler() check the received JSON string or object in JSON
  * @param attrPath record the attribute path
  * @param value current value to check
  * @param rule current rule, used to check velue
@@ -187,35 +204,12 @@ function objectHandler(attrPath: AttrPath, value: any, rule: ObjectRule): string
   return errs.join("");
 }
 
-
 /**
- * jsonBodyCheck() precheck middleware for JSON body;
+ * queryHandler(), check the query object according to rules
+ * @param query query object from ctx.query
+ * @param rules query object rule
  */
-export function jsonBodyCheck(rules: Array<AttrRule>) {
-  return async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => {
-    if (!isJSONBody(ctx)) {
-      ctx.status = 400;
-      ctx.body = { bodyError: "body must be a JSON" };
-      return
-    }
-    const reqBody = JSON.parse(ctx.request.rawBody);
-    const bodyErrMsg = objectHandler([], reqBody, {
-      type: "object",
-      attrRules: rules,
-    })
-    if (bodyErrMsg) {
-      ctx.status = 400;
-      ctx.body = { bodyError: bodyErrMsg };
-    } else {
-      await next()
-    }
-  }
-}
-
-/**
- * --------------------- query check ----------------
- */
-function queryKeyCheck(query: any, rules: Array<AttrQueryRule>): string | null {
+function queryHandler(query: any, rules: Array<AttrQueryRule>): string | null {
   const queryKeys = Reflect.ownKeys(query);
   const errs: string[] = [];
   for (const rule of rules) {
@@ -223,7 +217,6 @@ function queryKeyCheck(query: any, rules: Array<AttrQueryRule>): string | null {
       errs.push(`${rule.key} is required; `);
       continue;
     }
-
     const value = query[rule.key];
     let err: string | null = null;
     switch (rule.type) {
@@ -246,17 +239,42 @@ function queryKeyCheck(query: any, rules: Array<AttrQueryRule>): string | null {
 }
 
 /**
- * queryCheck(), precheck middleware for query;
+ * jsonBodyCheck() precheck  for application/json body;
  */
-export function queryCheck(rules: Array<AttrQueryRule>) {
+export function jsonBodyCheck(rules: Array<AttrRule>) {
   return async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => {
-    const queryErrMsg = queryKeyCheck(ctx.query, rules);
-    if (queryErrMsg) {
+    const [succeed, parsedJSON] = await isJSONBody(ctx);
+    if (!succeed) {
       ctx.status = 400;
-      ctx.body = { queryError: queryErrMsg };
+      ctx.body = { bodyError: "body must be a JSON" };
+      return
+    }
+    const bodyErrMsg = objectHandler([], parsedJSON, {
+      type: "object",
+      attrRules: rules,
+    })
+    if (bodyErrMsg) {
+      ctx.status = 400;
+      ctx.body = { bodyError: bodyErrMsg };
     } else {
+      ctx.request.passedParams = { body: parsedJSON }
       await next()
     }
   }
 }
 
+/**
+ * queryCheck(), precheck for query
+ */
+export function queryCheck(rules: Array<AttrQueryRule>) {
+  return async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => {
+    const queryErrMsg = queryHandler(ctx.query, rules);
+    if (queryErrMsg) {
+      ctx.status = 400;
+      ctx.body = { queryError: queryErrMsg };
+    } else {
+      ctx.request.passedParams = { query: ctx.query };
+      await next()
+    }
+  }
+}

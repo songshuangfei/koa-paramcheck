@@ -10,13 +10,10 @@ npm i koa-paramcheck
 In javascript.
 ```js
 import Koa from "koa";
-import bodyParser from "koa-bodyparser";
 import Router from "koa-router";
 import { jsonBodyCheck, queryCheck } from "koa-paramcheck";
 
 const app = new Koa();
-
-app.use(bodyParser()); //This step is needed, or jsonBodyCheck will not work
 
 const router = new Router();
 
@@ -35,6 +32,8 @@ router.get("/search", queryCheck([
     }
   },
 ]), async (ctx) => {
+  const q = ctx.request.passedParams.query; // get query
+  if(q) console.log(q);
   ctx.body = { succeed: true }
 })
 
@@ -60,14 +59,23 @@ router.post("/register", jsonBodyCheck([
     attrRules: [
       { type: "string", key: "nickName" },
       { type: "number", key: "age", min: 0 },
-    ]
+      { type: "array", key: "jobs", itemRule:{
+        type:"object",
+        attrRules:[
+          {type:"string",key:"industry"},
+          {type:"string",key:"jobName"},
+          {type:"number", key:"workingYears", min:0},
+        ]
+      } },
+    ],
   }
 ]), async (ctx) => {
+  const body = ctx.request.passedParams.body; // get body
+  if(body) console.log(body);
+  ctx.body = { succeed: true }
   ctx.body = { succeed: true }
 })
-
 app.use(router.routes()).use(router.allowedMethods());
-
 app.listen("8081");
 ```
 In typescript, you can define the rules clearly. 

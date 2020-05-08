@@ -1,20 +1,23 @@
 {
   "name": "koa-paramcheck",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "A koa middleware for checking querystring and body.",
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc"
   },
-  "keywords": ["koa"],
+  "keywords": [
+    "koa"
+  ],
   "author": "Song Shuangfei",
   "license": "ISC",
   "devDependencies": {
+    "@types/co-body": "^5.1.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {
     "@types/koa": "^2.11.3",
-    "@types/koa-bodyparser": "^4.3.0"
+    "co-body": "^6.0.0"
   },
   "repository": {
     "type": "git",

@@ -2,6 +2,14 @@
  * koa-paramcheck
  */
 import * as Koa from "koa";
+declare module "koa" {
+    interface Request {
+        passedParams: {
+            query?: any;
+            body?: any;
+        };
+    }
+}
 /**
  * rules used to check
  */
@@ -58,11 +66,11 @@ declare type AttrQueryRule = QueryStringRule & {
     key: string;
 };
 /**
- * jsonBodyCheck() precheck middleware for JSON body;
+ * jsonBodyCheck() precheck  for application/json body;
  */
 export declare function jsonBodyCheck(rules: Array<AttrRule>): (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => Promise<void>;
 /**
- * queryCheck(), precheck middleware for query;
+ * queryCheck(), precheck for query
  */
 export declare function queryCheck(rules: Array<AttrQueryRule>): (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => Promise<void>;
 export {};

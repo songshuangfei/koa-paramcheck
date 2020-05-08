@@ -1,13 +1,18 @@
 # koa param check
-A koa middleware for checking querystring and body.
+A koa middleware for checking querystring and JSON body.
 Define a rule for this middleware as the first parameter. If the parameters of the http request do not match this rule, http will response with a 400 status code and a detailed error message;
+
+## install
+```bash
+npm i koa-paramcheck
+```
 ## usage
 In javascript.
 ```js
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import Router from "koa-router";
-import { bodyCheck, queryCheck } from "koa-paramcheck";
+import { jsonBodyCheck, queryCheck } from "koa-paramcheck";
 
 const app = new Koa();
 app.use(bodyParser()); //This is neccessary, or bodyCheck will not work
@@ -28,7 +33,7 @@ router.get("/search", queryCheck([
   ctx.body = { succeed: true }
 })
 
-router.post("/register", bodyCheck([
+router.post("/register", jsonBodyCheck([
   { type: "string", key: "verifyCode" },
   { type: "string", key: "pwd" },
   {
@@ -78,7 +83,7 @@ const phoneNumberRule: Rule = {
   message: "{{path}} must be a phone number"
 }
 
-router.post("/contacts", bodyCheck([
+router.post("/contacts", jsonBodyCheck([
   { key: "myPhoneNumber", ...phoneNumberRule },
   { key: "myFriendsPhoneNumbers", type: "array", itemRule: phoneNumberRule },
   {

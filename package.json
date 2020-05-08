@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["koa"],
+  "author": "Song Shuangfei",
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.8.3"

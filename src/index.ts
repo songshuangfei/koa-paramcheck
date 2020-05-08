@@ -13,9 +13,6 @@ interface AnyRule { type: "any" }
 interface ArrayRule { type: "array", itemRule: Rule }
 interface ObjectRule { type: "object", attrRules: Array<AttrRule> }
 
-export type Rule = StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule;
-type AttrRule = StringRule & { key: string } | NumberRule & { key: string } | BoolRule & { key: string } | ArrayRule & { key: string } | ObjectRule & { key: string } | AnyRule & { key: string };
-
 type QueryStringRule = StringRule;
 interface QueryArrayRule {
   type: "array",
@@ -24,10 +21,11 @@ interface QueryArrayRule {
     message?: string
   }
 }
+
+export type Rule = StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule;
 export type QueryRule = QueryStringRule | QueryArrayRule;
-
+type AttrRule = StringRule & { key: string } | NumberRule & { key: string } | BoolRule & { key: string } | ArrayRule & { key: string } | ObjectRule & { key: string } | AnyRule & { key: string };
 type AttrQueryRule = QueryStringRule & { key: string } | QueryArrayRule & { key: string };
-
 
 type AttrPath = Array<string | number>;
 /**
@@ -49,6 +47,20 @@ function getRange(min: number | undefined, max: number | undefined): string {
   left = min === undefined ? "(-∞" : `[${min}`;
   right = max === undefined ? "+∞)" : `${max}]`;
   return `${left}, ${right}; `;
+}
+
+/**
+ * Judge if the `ctx.request.rawBody` provide by koa-bodyparser is a application/json
+ */
+function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>){
+  if (ctx.request.headers['content-type'] !== 'application/json')
+    return false;
+  try {
+    JSON.stringify(ctx.request.rawBody);
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 }
 
 /**
@@ -174,14 +186,18 @@ function objectHandler(attrPath: AttrPath, value: any, rule: ObjectRule): string
   return errs.join("");
 }
 
+
 /**
- * bodyCheck() precheck middleware for body;
+ * jsonBodyCheck() precheck middleware for JSON body;
  */
-export function bodyCheck(rules: Array<AttrRule>) {
+export function jsonBodyCheck(rules: Array<AttrRule>) {
   return async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) => {
-    const body = ctx.request.body || {};
-    // invalid JSON
-    const bodyErrMsg = objectHandler([], body, {
+    if (!isJSONBody(ctx)) {
+      ctx.body = { bodyError: "body must be a JSON" };
+      return
+    }
+    const reqBody = JSON.stringify(ctx.request.rawBody);
+    const bodyErrMsg = objectHandler([], reqBody, {
       type: "object",
       attrRules: rules,
     })

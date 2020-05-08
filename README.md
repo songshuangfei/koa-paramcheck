@@ -70,9 +70,8 @@ router.post("/register", jsonBodyCheck([
     ],
   }
 ]), async (ctx) => {
-  const body = ctx.request.passedParams.body; // get body
+  const body = ctx.request.passedParams.body; // get JSON body
   if(body) console.log(body);
-  ctx.body = { succeed: true }
   ctx.body = { succeed: true }
 })
 app.use(router.routes()).use(router.allowedMethods());

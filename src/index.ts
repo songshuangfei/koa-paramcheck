@@ -57,8 +57,9 @@ function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultC
     return false;
   try {
     JSON.stringify(ctx.request.rawBody);
+    return true
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return false
   }
 }

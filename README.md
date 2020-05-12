@@ -146,26 +146,26 @@ $ curl http://localhost:3001/register -d '{"phoneNumber":"15000000000"}'
 * rules
   |rule type| data type | rule |
   |:-| :-| :---- |
-  | `StringRule` | string | `{type: "string", regExp?: RegExp, message?: string}` |
-  | `NumberRule` | number | `{type: "number", max?: number, min?: number}`|
-  | `BoolRule` | boolean | `{type: "boolean"}`|
-  | `AnyRule` | any | `{type: "any"}`|
-  | `ArrayRule` | array | `{type: "array", itemRule: StringRule | NumberRule | BoolRule | AnyRule | ArrayRule | ObjectRule, allowEmpty?: boolean}`|
-  | `AnyRule` | any | `{type: "any"}`|
-  | `ObjectRule` | object | `{type: "object", attrRules: Array<StringRule&{key:string} | NumberRule&{key:string} | BoolRule&{key:string} | AnyRule&{key:string} | ArrayRule&{key:string} | ObjectRule&{key:string}>,  allowOtherKeys?: boolean}`|
+  | StringRule | string | {type: "string", regExp?: RegExp, message?: string} |
+  | NumberRule | number | {type: "number", max?: number, min?: number}|
+  | BoolRule | boolean | {type: "boolean"}|
+  | AnyRule | any | {type: "any"}|
+  | ArrayRule | array | {type: "array", itemRule: StringRule \| NumberRule \| BoolRule \| AnyRule \| ArrayRule \| ObjectRule, allowEmpty?: boolean}|
+  | AnyRule | any | {type: "any"}|
+  | ObjectRule | object | {type: "object", attrRules: Array<StringRule&{key:string} \| NumberRule&{key:string} \| BoolRule&{key:string} \| AnyRule&{key:string} \| ArrayRule&{key:string} \| ObjectRule&{key:string}>,  allowOtherKeys?: boolean}|
 
 * middleware
   |middlware| param |
   |:-| :-|
-  | `jsonBodyCheck(param)` | `ArrayRule | ObjectRule` |
+  | `jsonBodyCheck(param)` | ArrayRule \| ObjectRule |
 
 ### query
 * rules
   |rule type| data type | rule |
   |:-| :-| :---- |
-  |`StringRule`| string | `{type: "string", regExp?: RegExp, message?: string}` |
-  |`ArrayRule`| array| `{type: "array", allowEmpty?: boolean, itemRule:Omit<StringRule, "type">}` |
+  |StringRule| string | {type: "string", regExp?: RegExp, message?: string} |
+  |ArrayRule| array| {type: "array", allowEmpty?: boolean, itemRule:Omit<StringRule, "type">} |
 * middleware
   |middlware| param |
   |:-| :-|
-  | `queryCheck(param)` | `ArrayRule&{key:string} | StringRule&{key:string} ` |
+  | `queryCheck(param)` | ArrayRule&{key:string} \| StringRule&{key:string} |

@@ -24,14 +24,32 @@ export function joinAttrPath(arr: Array<string | number>): string {
 /**
 * Judge if the body  is a application/json
 */
-export async function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>):Promise< [boolean, any]> {
-//  if (ctx.request.headers['content-type'] !== 'application/json')
-//    return [false, null];
- try {
-   const res = await Parse.json(ctx.req);
-   return [true, res]
- } catch (error) {
-   console.error(error)
-   return [false, null]
- }
+export async function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>): Promise<[boolean, any]> {
+  //  if (ctx.request.headers['content-type'] !== 'application/json')
+  //    return [false, null];
+  try {
+    const res = await Parse.json(ctx.req);
+    return [true, res]
+  } catch (error) {
+    console.error(error)
+    return [false, null]
+  }
+}
+
+
+/**
+* transfrom attributes in ctx.query to an Array(length === 1) by attributes keys
+* and return a new query object
+*/
+export function transformQueryAttrtoArray(queryObj: any, keys: string[]): Promise<[boolean, any]> {
+  const QObj = { ...queryObj };
+  const objKeys = Reflect.ownKeys(QObj);
+  keys.forEach(k => {
+    if (!objKeys.includes(k)) 
+      return;
+    if (QObj[k] instanceof Array) 
+      return;
+    else QObj[k] = [QObj[k]];
+  })
+  return QObj;
 }

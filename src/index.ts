@@ -2,7 +2,7 @@
  * koa-paramcheck
  */
 import * as Koa from "koa";
-import { getRange, joinAttrPath, isJSONBody } from "./util";
+import { getRange, joinAttrPath, isJSONBody, transformQueryAttrtoArray } from "./util";
 declare module "koa" {
   interface Request {
     // if http parameter pass the check, it will be parse and set to here
@@ -216,6 +216,7 @@ type AttrQueryRule = QueryRule & { key: string };
  */
 export function queryCheck(rules: Array<AttrQueryRule>): KoaMiddleware {
   return async (ctx, next) => {
+    const qobj = transformQueryAttrtoArray(ctx.query, rules.filter(i => i.type === "array").map(i => i.key));
     const queryObjectRule: ObjectRule = {
       type: "object",
       attrRules: rules.map(r=>{
@@ -223,12 +224,12 @@ export function queryCheck(rules: Array<AttrQueryRule>): KoaMiddleware {
         else return { ...r, itemRule: { ...r.itemRule, type: "string" } };
       })
     }
-    const queryErrMsg = HandlerSwitch([], ctx.query, queryObjectRule);
+    const queryErrMsg = HandlerSwitch([], qobj, queryObjectRule);
     if (queryErrMsg) {
       ctx.status = 400;
       ctx.body = { queryError: queryErrMsg };
     } else {
-      ctx.request.passedParams = { query: ctx.query };
+      ctx.request.passedParams = { query: qobj };
       await next();
     }
   }

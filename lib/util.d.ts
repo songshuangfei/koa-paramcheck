@@ -9,3 +9,8 @@ export declare function joinAttrPath(arr: Array<string | number>): string;
 * Judge if the body  is a application/json
 */
 export declare function isJSONBody(ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>): Promise<[boolean, any]>;
+/**
+* transfrom attributes in ctx.query to an Array(length === 1) by attributes keys
+* and return a new query object
+*/
+export declare function transformQueryAttrtoArray(queryObj: any, keys: string[]): Promise<[boolean, any]>;

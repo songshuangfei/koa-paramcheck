@@ -1,17 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es5", 
-    "module": "commonjs", 
-    "declaration": true, 
-    "outDir": "./lib",
-    "strict": true,
-    "lib": ["es6","es7"],
-    "downlevelIteration": true,            /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-  ]
+    "lib": ["esnext"],
+    "target": "es5",
+    "baseUrl": "src",
+    "strict": true,                           
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationDir": "lib/typings",
+    "downlevelIteration": true,
+  }
 }

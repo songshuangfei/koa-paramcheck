@@ -2,9 +2,13 @@
   "name": "koa-paramcheck",
   "version": "0.3.3",
   "description": "A koa middleware for checking querystring and body.",
-  "main": "./lib/index.js",
+  "main": "./lib/main.cjs.js",
+  "module": "./lib/main.esm.js",
+  "typings": "./lib/typings/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "pretest": "npm run build"
   },
   "keywords": [
     "koa"
@@ -12,11 +16,15 @@
   "author": "Song Shuangfei",
   "license": "ISC",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^15.0.0",
     "@types/co-body": "^5.1.0",
+    "rollup": "^2.26.6",
+    "rollup-plugin-typescript2": "^0.27.2",
+    "tslib": "^2.0.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@types/koa": "^2.11.3",
+    "@types/koa": "^2.11.4",
     "co-body": "^6.0.0"
   },
   "repository": {

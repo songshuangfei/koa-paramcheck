@@ -31,7 +31,6 @@ describe('data type handler', () => {
     assert.equal(stringHandler(' ', { 
       type: 'string', 
       allowSpace: true,
-      allowEmpty: false
     }), null);
 
     assert.equal(stringHandler(' a', { 
@@ -48,6 +47,12 @@ describe('data type handler', () => {
       type: 'string', 
       regExp: /^[0-9]*$/,
     }), null);
+
+    assert.equal(stringHandler(' ', { 
+      type: 'string', 
+      allowSpace: true,
+      allowEmpty: false
+    }), StringErrors.DO_NOT_ALLOW_EMPTY);
 
   });
 

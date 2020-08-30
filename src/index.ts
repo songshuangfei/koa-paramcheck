@@ -1,9 +1,9 @@
 /**
  * koa-paramcheck
  */
-import * as Koa from "koa";
-import { getRange, joinAttrPath, isJSONBody, transformQueryAttrtoArray } from "./util";
-declare module "koa" {
+import * as Koa from 'koa';
+import { getRange, joinAttrPath, isJSONBody, transformQueryAttrtoArray } from './util';
+declare module 'koa' {
   interface Request {
     // if http parameter pass the check, it will be parse and set to here
     passedParams:{
@@ -12,34 +12,35 @@ declare module "koa" {
     }
   }
 }
-type KoaMiddleware = (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) =>any
 
+type KoaMiddleware = (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) =>any
 /**
  * rules used to check
  */
 interface StringRule {
-  type: "string",
+  type: 'string',
   regExp?: RegExp,
   message?: string
 }
+
 interface NumberRule {
-  type: "number",
+  type: 'number',
   max?: number,
   min?: number
 }
 interface BoolRule {
-  type: "boolean"
+  type: 'boolean'
 }
 interface AnyRule {
-  type: "any"
+  type: 'any'
 }
 interface ArrayRule {
-  type: "array",
+  type: 'array',
   itemRule: Rule,
   allowEmpty?: boolean
 }
 interface ObjectRule {
-  type: "object",
+  type: 'object',
   attrRules: Array<AttrRule>,
   allowOtherKeys?: boolean
 }
@@ -58,11 +59,11 @@ type AttrPath = Array<string | number>;
  */
 function stringHandler(attrPath: AttrPath, value: any, rule: StringRule): string | null {
   const path = joinAttrPath(attrPath);
-  if (typeof value !== "string")
+  if (typeof value !== 'string')
     return `${path} must be a string; `;
   if (rule.regExp && !rule.regExp.test(value)) {
     if (rule.message)
-      return `${rule.message.replace("{{path}}", path)}; `;
+      return `${rule.message.replace('{{path}}', path)}; `;
     else
       return `${path} dose not match ${rule.regExp.toString()}; `;
   }
@@ -71,25 +72,25 @@ function stringHandler(attrPath: AttrPath, value: any, rule: StringRule): string
 
 function numberHandler(attrPath: AttrPath, value: any, rule: NumberRule): string | null {
   const path = joinAttrPath(attrPath);
-  if (typeof value !== "number")
+  if (typeof value !== 'number')
     return `${path} must be a number; `;
   const { min, max } = rule;
   if ((min !== undefined && value < min) || (max !== undefined && value > max))
     return `${path} must be in range${getRange(min, max)}; `;
-  return null
+  return null;
 }
 
 function booleanHandler(attrPath: AttrPath, value: any, rule: BoolRule): string | null {
-  if (typeof value !== "boolean")
+  if (typeof value !== 'boolean')
     return `${joinAttrPath(attrPath)} must be a boolean; `;
-  return null
+  return null;
 }
 
 function anyHandler(attrPath: AttrPath, value: any, rule: AnyRule): string | null {
   if (value === undefined) {
     return `${joinAttrPath(attrPath)} is required; `;
   }
-  return null
+  return null;
 }
 
 /**
@@ -112,7 +113,7 @@ function arrayHandler(attrPath: AttrPath, value: any, rule: ArrayRule): string |
     const err = HandlerSwitch(nextAttrPath, itemValue, rule.itemRule);
     if (err) errs.push(err);
   }
-  return errs.length === 0 ? null : errs.join("");
+  return errs.length === 0 ? null : errs.join('');
 }
 
 /**
@@ -139,8 +140,8 @@ function objectHandler(attrPath: AttrPath, value: any, rule: ObjectRule): string
     //current attribute value
     const attrValue = value[attrRule.key];
     //error of current attribute
-    const err = HandlerSwitch(nextAttrPath, attrValue, attrRule)
-    if (err) errs.push(err)
+    const err = HandlerSwitch(nextAttrPath, attrValue, attrRule);
+    if (err) errs.push(err);
   }
   //find the keys witch are not defined in the object attributes rules
   if (!rule.allowOtherKeys) {
@@ -149,35 +150,35 @@ function objectHandler(attrPath: AttrPath, value: any, rule: ObjectRule): string
       const pathStr = joinAttrPath([...attrPath, String(key)]);
       if (!allowedKeys.includes(String(key)))
         errs.push(`${pathStr} is not allowed; `);
-    })
+    });
   }
-  return errs.length === 0 ? null : errs.join("");
+  return errs.length === 0 ? null : errs.join('');
 }
 
 function HandlerSwitch(attrPath: AttrPath, value: any, rule: Rule): string | null {
   let err: string | null = null;
   switch (rule.type) {
-    case "string":
-      err = stringHandler(attrPath, value, rule);
-      break;
-    case "number":
-      err = numberHandler(attrPath, value, rule);
-      break;
-    case "boolean":
-      err = booleanHandler(attrPath, value, rule);
-      break;
-    case "any":
-      err = anyHandler(attrPath, value, rule);
-      break;
-    case "array":
-      err = arrayHandler(attrPath, value, rule);
-      break;
-    case "object":
-      err = objectHandler(attrPath, value, rule);
-      break;
+  case 'string':
+    err = stringHandler(attrPath, value, rule);
+    break;
+  case 'number':
+    err = numberHandler(attrPath, value, rule);
+    break;
+  case 'boolean':
+    err = booleanHandler(attrPath, value, rule);
+    break;
+  case 'any':
+    err = anyHandler(attrPath, value, rule);
+    break;
+  case 'array':
+    err = arrayHandler(attrPath, value, rule);
+    break;
+  case 'object':
+    err = objectHandler(attrPath, value, rule);
+    break;
   }
   if (err) return err;
-  return null
+  return null;
 }
 
 
@@ -192,38 +193,38 @@ export function jsonBodyCheck(rootRule: JSONType): KoaMiddleware {
     const [succeed, parsedJSON] = await isJSONBody(ctx);
     if (!succeed) {
       ctx.status = 400;
-      ctx.body = { bodyError: "invalid JSON, only supports object and array; " };
+      ctx.body = { bodyError: 'invalid JSON, only supports object and array; ' };
       return;
     }
 
-    const bodyErrMsg = HandlerSwitch([], parsedJSON, rootRule)
+    const bodyErrMsg = HandlerSwitch([], parsedJSON, rootRule);
     if (bodyErrMsg) {
       ctx.status = 400;
       ctx.body = { bodyError: bodyErrMsg };
     } else {
-      ctx.request.passedParams = { body: parsedJSON }
+      ctx.request.passedParams = { body: parsedJSON };
       await next();
     }
-  }
+  };
 }
 
 //--------------------query-----------------
 // rule for query
-export type QueryRule = StringRule | { type: "array", itemRule: Omit<StringRule, "type">, allowEmpty?: boolean };
+export type QueryRule = StringRule | { type: 'array', itemRule: Omit<StringRule, 'type'>, allowEmpty?: boolean };
 type AttrQueryRule = QueryRule & { key: string };
 /**
  * queryCheck(), precheck for query
  */
 export function queryCheck(rules: Array<AttrQueryRule>): KoaMiddleware {
   return async (ctx, next) => {
-    const qobj = transformQueryAttrtoArray(ctx.query, rules.filter(i => i.type === "array").map(i => i.key));
+    const qobj = transformQueryAttrtoArray(ctx.query, rules.filter(i => i.type === 'array').map(i => i.key));
     const queryObjectRule: ObjectRule = {
-      type: "object",
+      type: 'object',
       attrRules: rules.map(r=>{
-        if(r.type==="string") return r;
-        else return { ...r, itemRule: { ...r.itemRule, type: "string" } };
+        if(r.type==='string') return r;
+        else return { ...r, itemRule: { ...r.itemRule, type: 'string' } };
       })
-    }
+    };
     const queryErrMsg = HandlerSwitch([], qobj, queryObjectRule);
     if (queryErrMsg) {
       ctx.status = 400;
@@ -232,5 +233,5 @@ export function queryCheck(rules: Array<AttrQueryRule>): KoaMiddleware {
       ctx.request.passedParams = { query: qobj };
       await next();
     }
-  }
+  };
 }

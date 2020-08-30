@@ -1,14 +1,22 @@
 {
   "compilerOptions": {
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "target": "es5",
     "baseUrl": "src",
-    "strict": true,                           
+    "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "declarationDir": "lib/typings",
     "downlevelIteration": true,
-  }
+  },
+  "exclude": [
+    "src/**/*.test.ts",
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
 }

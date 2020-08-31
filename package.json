@@ -1,6 +1,11 @@
 {
   "name": "koa-paramcheck",
   "version": "0.3.3",
+  "author": "Song Shuangfei",
+  "license": "ISC",
+  "keywords": [
+    "koa"
+  ],
   "description": "A koa middleware for checking querystring and body.",
   "main": "./lib/main.cjs.js",
   "module": "./lib/main.esm.js",
@@ -8,13 +13,9 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test":"mocha --require ts-node/register src/**/*.test.ts --project tsconfig.json"
+    "test":"mocha --require ts-node/register src/**/*.test.ts --project tsconfig.json",
+    "prepublishOnly": "yarn build"
   },
-  "keywords": [
-    "koa"
-  ],
-  "author": "Song Shuangfei",
-  "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.0.0",
     "@types/co-body": "^5.1.0",
@@ -33,5 +34,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/songshuangfei/koa-paramcheck.git"
-  }
+  },
+  "files": [
+    "lib"
+  ]
 }

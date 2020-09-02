@@ -10,6 +10,8 @@ import {
 import {
   StringErrors,
   NumberErrors,
+  BoolErrors,
+  AnyErrors,
 } from './type/errors';
 
 import { removeSpace } from './utils/string'
@@ -22,7 +24,7 @@ const defaultStrRule: StringRule = {
   allowNull: false,
 }
 
-const ddefaultNumRule: NumberRule = {
+const defaultNumRule: NumberRule = {
   type: 'number',
   allowNull: false,
   max: Infinity,
@@ -30,6 +32,15 @@ const ddefaultNumRule: NumberRule = {
   isInteger: false
 }
 
+const defaultBoolRule: BoolRule = {
+  type: 'boolean',
+  allowNull: false,
+}
+
+const defaultAnyRule: AnyRule = {
+  type: 'any',
+  allowNull: true
+}
 
 export function stringHandler(value: any, rule: StringRule): StringErrors | null {
   rule = Object.assign({}, defaultStrRule, rule);
@@ -49,7 +60,7 @@ export function stringHandler(value: any, rule: StringRule): StringErrors | null
 }
 
 export function numberHandler(value: any, rule: NumberRule): NumberErrors | null {
-  const r = Object.assign({}, ddefaultNumRule, rule) as {
+  const r = Object.assign({}, defaultNumRule, rule) as {
     allowNull: boolean,
     max: number,
     min: number,
@@ -65,4 +76,20 @@ export function numberHandler(value: any, rule: NumberRule): NumberErrors | null
   if (value < r.min || value > r.max)
     return NumberErrors.OUT_OF_RANGE;
   return null;
+}
+
+export function boolHandler(value: any, rule: BoolRule): BoolErrors | null {
+  rule = Object.assign({}, defaultBoolRule, rule);
+  if (value === null)
+    return rule.allowNull ? null : BoolErrors.DO_NOT_ALLOW_NULL;
+  if (typeof value !== 'boolean')
+    return BoolErrors.NOT_A_BOOL;
+  return null
+}
+
+export function anyHandler(value: any, rule: AnyRule): AnyErrors | null {
+  rule = Object.assign({}, defaultAnyRule, rule);
+  if (value === null)
+    return rule.allowNull ? null : AnyErrors.DO_NOT_ALLOW_NULL;
+  return null
 }

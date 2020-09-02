@@ -12,3 +12,12 @@ export enum NumberErrors {
   NOT_A_INTEGER,
   OUT_OF_RANGE,
 }
+
+export enum BoolErrors {
+  DO_NOT_ALLOW_NULL = 1,
+  NOT_A_BOOL,
+}
+
+export enum AnyErrors {
+  DO_NOT_ALLOW_NULL = 1,
+}

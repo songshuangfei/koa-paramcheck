@@ -2,10 +2,14 @@ import assert from "assert";
 import {
   stringHandler,
   numberHandler,
+  boolHandler,
+  anyHandler,
 } from './handler';
 import {
   StringErrors,
   NumberErrors,
+  BoolErrors,
+  AnyErrors,
 } from './type/errors';
 
 describe('data type handler', () => {
@@ -79,6 +83,29 @@ describe('data type handler', () => {
       max: 10,
       min: 0
     }), NumberErrors.OUT_OF_RANGE);
+  });
+
+  it('boolean handler', () => {
+    assert.equal(
+      boolHandler(0, { type: 'boolean', allowNull: false }),
+      BoolErrors.NOT_A_BOOL
+    );
+    assert.equal(
+      boolHandler(null, { type: 'boolean', allowNull: false }),
+      BoolErrors.DO_NOT_ALLOW_NULL
+    );
+
+    assert.equal(
+      boolHandler(null, { type: 'boolean', allowNull: true }),
+      null
+    );
+  });
+
+  it('any handler', () => {
+    assert.equal(
+      anyHandler(null, { type: 'any', allowNull:false }),
+      AnyErrors.DO_NOT_ALLOW_NULL
+    )
   });
 
 })

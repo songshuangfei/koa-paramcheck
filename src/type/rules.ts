@@ -41,7 +41,6 @@ export interface ArrayRule extends RuleBase {
 
 export interface ObjectRule extends RuleBase {
   type: 'object',
-  itemRule: Rule,
   properties: {
     [key: string]: Rule,
   },

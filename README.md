@@ -1,3 +1,6 @@
+  if(rulePropertiesKeys.length === 0) throw new Error('\"properties\" can not be empty in object rule.')
+
+
 # koa param check
 A Koa middleware for parsing and checking query and JSON body .
 Define a rule for this middleware as the first parameter. If the parameters of the http request do not match this rule, http will response with a 400 status code and a detailed error message;

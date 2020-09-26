@@ -1,5 +1,5 @@
 export function removeStrSpace(str: string) {
-  return str.replace(/\s+/g, "")
+  return str.replace(/\s+/g, '')
 }
 
 export function isObject(val: any) {

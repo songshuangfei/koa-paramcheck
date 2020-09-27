@@ -1,171 +1,122 @@
-# koa param check
-A Koa middleware for parsing and checking query and JSON body .
-Define a rule for this middleware as the first parameter. If the parameters of the http request do not match this rule, http will response with a 400 status code and a detailed error message;
+<h1 align="center">koa-paramcheck</h1>
+<p align="center">Koa middlewares, for parsing and checking query string or JSON body.</p>
+<p align="center">
+  <img src="https://img.shields.io/npm/v/koa-paramcheck">
+  <img src="https://img.shields.io/github/workflow/status/songshuangfei/koa-paramcheck/Node.js%20CI">
+</p>
 
-## install
-```bash
-npm i koa-paramcheck
-```
-## usage
-In javascript.
-```js
+```ts
 import Koa from "koa";
-import Router from "koa-router";
-import { jsonBodyCheck, queryCheck } from "koa-paramcheck";
-
+import { jsonBodyCheck, StringRule } from "koa-paramcheck";
 const app = new Koa();
-const router = new Router();
 
-//Define query rule
-router.get("/search", queryCheck([
-  { type: "string", key: "str" },
-  {
-    type: "array",
-    key: "bools",
-    itemRule: {
-      message: "{{path}} must be a boolean",
-      regExp: /(true)|(false)$/i
-    }
-  },
-]), async (ctx) => {
-  const query = ctx.request.passedParams.query;
-  ctx.body = { query }
-})
+const phoneNumberRule: StringRule = {
+  type: 'string',
+  regExp: /^[1]([3-9])[0-9]{9}$/,
+  message: '{{path}} must be a phone number'
+};
 
-//Define object JSON rule
-router.post("/register", jsonBodyCheck({
-  type:"object",
-  allowOtherKeys:true,
-  attrRules:[
-    { type: "string", key: "verifyCode" },
-    { type: "string", key: "pwd" },
-    {
+app.use(jsonBodyCheck({
+  type: "array",
+  itemRule: phoneNumberRule,
+  allowEmpty: false
+})).use(async (ctx) => {
+  console.log(ctx.request.passedParams?.body)
+});
+```
+
+## Description
+Koa middlewares for parsing and checking query and JSON body. Define a rule for this middleware as the first parameter. If the parameters of the http request do not match this rule, http will response with a 400 status code and a detailed error message;
+
+## Use
+
+### jsonBodyCheck
+`jsonBodyCheck`, a middleware based on `co-body`. It can parse and ckeck JSON body(object and array only).
+```ts
+import { jsonBodyCheck, StringRule, ObjectRule } from "koa-paramcheck";
+
+const phoneNumberRule: StringRule = {
+  type: 'string',
+  regExp: /^[1]([3-9])[0-9]{9}$/,
+  message: '{{path}} must be a phone number'
+};
+
+const emailRule: StringRule = {
+  type: "string",
+  regExp: /^\w+@[a-z0-9]\.[a-z]+$/i,
+  message: "{{path}} must be an email."
+}
+
+const contactRule: ObjectRule = {
+  type: "object",
+  properties: {
+    name: {
       type: "string",
-      key: "phoneNumber",
-      regExp: /^[1]([3-9])[0-9]{9}$/,
-      message: "{{path}} must be a phone number"
+      allowEmpty: false,
     },
-    {
-      type: "array", 
-      key: "tags", 
+    email: emailRule,
+    phoneNumber: phoneNumberRule
+  },
+  requiredKeys: ["name", "email"]
+}
+
+// define a JSON body like 
+// {
+//   contacts: Array<{
+//     name: string,
+//     email: string,
+//     phoneNumber: string
+//   }>,
+//   date: string
+// }
+app.use(jsonBodyCheck({
+  type: "object",
+  properties: {
+    contacts: {
+      type: "array",
+      itemRule: contactRule
+    },
+    date: {
+      type: "string",
+      allowNull: true
+    }
+  }
+})).use(async (ctx) => {
+  console.log(ctx.request.passedParams?.body)
+});
+```
+## queryCheck
+`queryCheck`, middleware, check the query and automatically convert the data type.
+```ts
+import { queryCheck } from "koa-paramcheck";
+// defined a query body like 
+// {
+//   page: number,
+//   pageSize: number,
+//   keyWords: Array<string>
+// }
+app.use(queryCheck({
+  properties: {
+    keywords: {
+      type: "simpleArray",
+      allowEmpty: false,
       itemRule: {
-        type: "string"
+        type: 'string',
+        allowEmpty: false
       }
     },
-    {
-      type: "object", 
-      key: "info", 
-      attrRules: [
-        { type: "string", key: "nickName" },
-        { type: "number", key: "age", min: 0 },
-        { type: "array", key: "jobs", itemRule:{
-          type:"object",
-          attrRules:[
-            {type:"string",key:"industry"},
-            {type:"string",key:"jobName"},
-            {type:"number", key:"workingYears", min:0},
-          ]
-        } },
-      ],
-    }
-  ]
-}), async (ctx) => {
-  const body = ctx.request.passedParams.body;
-  ctx.body = { body };
-})
-
-//Define array JSON rule
-router.post("/add-tags", jsonBodyCheck({
-  type:"array",
-  allowEmpty:false,
-  itemRule:{
-    type: "string",
-  }
-}), async (ctx) => {
-  const body = ctx.request.passedParams.body;
-  ctx.body = { body };
-})
-```
-In typescript, you can define the rules clearly. 
-```ts
-import { jsonBodyCheck, queryCheck, Rule, QueryRule } from "koa-paramcheck";
-
-const numberStringRule: QueryRule = {
-  type: "string",
-  regExp: /^[0-9]*$/,
-  message: "{{path}} must be number string"
-}
-
-router.get("/search2", queryCheck([
-  { key: "num", ...numberStringRule },
-  { type: "array", key: "nums", itemRule: numberStringRule },
-]), async (ctx) => {
-  ctx.body = { 
-    query:ctx.request.passedParams.query
-  }
-})
-
-const phoneNumberRule: Rule = {
-  type: "string",
-  regExp: /^[1]([3-9])[0-9]{9}$/,
-  message: "{{path}} must be a phone number"
-}
-
-router.post("/contacts", jsonBodyCheck({
-  type:"object",
-  attrRules:[
-    { key: "myPhoneNumber", ...phoneNumberRule },
-    {
-      key: "myFriendsPhoneNumbers",
-      type: "array",
-      itemRule: phoneNumberRule
+    page: {
+      type: "number",
+      min: 1,
     },
-    {
-      key: "myFamilyPhoneNumbers",
-      type: "object",
-      attrRules: [
-        { key: "myFather", ...phoneNumberRule },
-        { key: "myMother", ...phoneNumberRule }
-      ]
+    pageSize: {
+      type: "number",
+      min: 1,
+      max: 20
     }
-  ]
-}), async (ctx) => {
-  ctx.body = { 
-    body:ctx.request.passedParams.body
-  }
-})
+  },
+  requiredKeys: ["keywords", "page", "pageSize"]
+})).use(async (ctx) => {
+  console.log(ctx.request.passedParams?.query)
+});
 ```
-## test
-```bash
-$ curl http://localhost:3001/register -d '{"phoneNumber":"15000000000"}'
-{"bodyError":"verifyCode is required; pwd is required; tags is required; info is required; "}
-```
-
-## api
-### JSON
-* rules
-  |rule type| data type | rule |
-  |:-| :-| :---- |
-  | StringRule | string | {type: "string", regExp?: RegExp, message?: string} |
-  | NumberRule | number | {type: "number", max?: number, min?: number}|
-  | BoolRule | boolean | {type: "boolean"}|
-  | AnyRule | any | {type: "any"}|
-  | ArrayRule | array | {type: "array", itemRule: StringRule \| NumberRule \| BoolRule \| AnyRule \| ArrayRule \| ObjectRule, allowEmpty?: boolean}|
-  | AnyRule | any | {type: "any"}|
-  | ObjectRule | object | {type: "object", attrRules: Array<StringRule&{key:string} \| NumberRule&{key:string} \| BoolRule&{key:string} \| AnyRule&{key:string} \| ArrayRule&{key:string} \| ObjectRule&{key:string}>,  allowOtherKeys?: boolean}|
-
-* middleware
-  |middlware| param |
-  |:-| :-|
-  | `jsonBodyCheck(param)` | ArrayRule \| ObjectRule |
-
-### query
-* rules
-  |rule type| data type | rule |
-  |:-| :-| :---- |
-  |StringRule| string | {type: "string", regExp?: RegExp, message?: string} |
-  |ArrayRule| array| {type: "array", allowEmpty?: boolean, itemRule:Omit<StringRule, "type">} |
-* middleware
-  |middlware| param |
-  |:-| :-|
-  | `queryCheck(param)` | ArrayRule&{key:string} \| StringRule&{key:string} |

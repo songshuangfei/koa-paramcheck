@@ -1,0 +1,10 @@
+{
+  "all": true,
+  "extension": [
+    ".ts"
+  ],
+  "exclude": [
+    "src/test"
+  ],
+  "include": "src"
+}

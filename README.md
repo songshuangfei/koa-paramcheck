@@ -192,8 +192,9 @@ app.use(queryCheck({
 |queryCheck|Check the query and automatically convert the data type.|0:QueryRule | ArrayRule|Koa MiddleWare|
 
 ### Ctx
+
 |path|description|value|
-|:-|:-|:-|-:|
+|:-|:-|:-|
 |ctx.request.passedParams|Passed param|`{query?: any,body?: any} | undefined`|
 |ctx.request.passedParams.body|Passed body|`Object | undefined`|
 |ctx.request.passedParams.query|Passed query|`Object | undefined`|

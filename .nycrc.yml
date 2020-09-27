@@ -1,0 +1,9 @@
+
+all: true
+lines: 80
+extension:
+- ".ts"
+exclude:
+- src/test
+include:
+- src

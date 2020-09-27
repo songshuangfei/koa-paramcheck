@@ -121,3 +121,82 @@ app.use(queryCheck({
   console.log(ctx.request.passedParams?.query)
 });
 ```
+## API
+### Rule
+#### StringRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'string'`|muset be `'string'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+|allowSpace|Allow space in string.|`boolean`|`true`|
+|allowEmpty|Allow empty string.|`boolean`|`true`|
+|regExp|Regex pattern|`RegExp`|`undefined`|
+|message|regExp failed message|`string`|`undefined`|
+
+#### NumberRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'number'`|muset be `'number'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+|max|Max value|`number`|`Infinity`|
+|min|Min value|`number`|`-Infinity`|
+|isInteger|Limit Integer|`boolean`|`false`|
+
+#### BoolRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'boolean'`|muset be `'boolean'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+
+#### AnyRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'any'`|muset be `'any'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+
+#### ArrayRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'array'`|muset be `'array'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+|allowEmpty|Allow empty array.|`boolean`|`true`|
+|itemRule|Rule of array item.|`StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule | SimpleArrayRule`|-|
+
+#### AnyRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'simpleArray'`|muset be `'simpleArray'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+|allowEmpty|Allow empty array.|`boolean`|`true`|
+|itemRule|Rule of array item.|`StringRule | BoolRule | NumberRule`|-|
+
+#### ObjectRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|type|-|`'object'`|muset be `'object'`|
+|allowNull|Allow null value.|`boolean`|`false`|
+|properties|Properties rules.|`{[key:string]: StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule | SimpleArrayRule}`|-|
+|requiredKeys|Required properties|`string[]`|`[]`|
+|allowOtherKeys|Allow other properties|`boolean`|`true`|
+
+#### QueryRule
+|option|description|type|default value|
+|:-|:-|:-|-:|
+|properties|Properties rules.|`{[key:string]: StringRule | BoolRule | NumberRule | SimpleArrayRule}`|-|
+|requiredKeys|Required properties|`string[]`|`[]`|
+
+### Middleware
+|name|description|param|return|
+|:-|:-|:-|-:|
+|jsonBodyCheck|Parse and ckeck JSON body.|0:ObjectRule | ArrayRule|Koa MiddleWare|
+|queryCheck|Check the query and automatically convert the data type.|0:QueryRule | ArrayRule|Koa MiddleWare|
+
+### Ctx
+|path|description|value|
+|:-|:-|:-|-:|
+|ctx.request.passedParams|Passed param|`{query?: any,body?: any} | undefined`|
+|ctx.request.passedParams.body|Passed body|`Object | undefined`|
+|ctx.request.passedParams.query|Passed query|`Object | undefined`|
+
+## License
+MIT

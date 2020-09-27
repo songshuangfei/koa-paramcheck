@@ -1,6 +1,7 @@
 {
   "all": true,
-  "lines": 92,
+  "lines": 90,
+  "check-coverage": true,
   "extension": [
     ".ts"
   ],

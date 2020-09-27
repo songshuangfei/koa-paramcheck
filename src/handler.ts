@@ -141,7 +141,7 @@ export function objectHandler(value: any, rawRule: ObjectRule, attrPath: AttrPat
   return errors.length ? errors.join('; ') : null;
 }
 
-export function handlerSwitch(value: any, rule: Rule, attrPath: AttrPath): string | null {
+export function handlerSwitch(value: any, rule: Rule, attrPath: AttrPath = new AttrPath()): string | null {
   let err: string | null = null;
   switch (rule.type) {
     case 'string':

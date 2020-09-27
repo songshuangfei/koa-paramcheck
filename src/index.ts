@@ -1,23 +1,14 @@
-/**
- * koa-paramcheck
- */
-import * as Koa from 'koa';
+export {
+  StringRule,
+  NumberRule,
+  BoolRule,
+  AnyRule,
+  ArrayRule,
+  ObjectRule,
+  Rule
+} from './type/rules';
 
-declare module 'koa' {
-  interface Request {
-    // if http parameter pass the check, it will be parse and set to here
-    passedParams:{
-      query?: any,
-      body?: any
-    }
-  }
-}
+export {
+  jsonBodyCheck
+} from './middleware'
 
-
-type KoaMiddleware = (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext>, next: Koa.Next) =>any;
-
-
-
-
-
-export const a =1

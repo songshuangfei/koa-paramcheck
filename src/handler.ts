@@ -5,6 +5,7 @@ import {
   AnyRule,
   ArrayRule,
   ObjectRule,
+  SimpleArrayRule,
   Rule
 } from './type/rules';
 
@@ -104,6 +105,11 @@ function arrayHandler(value: any, rawRule: ArrayRule, attrPath: AttrPath): strin
   return errors.length ? errors.join('; ') : null;
 }
 
+// the item of a simple array can only be boolean, string, or number  
+function simpleArrayHandler(value: any, rawRule: SimpleArrayRule, attrPath: AttrPath): string | null {
+  return arrayHandler(value, { ...rawRule, type: 'array' }, attrPath)
+}
+
 export function objectHandler(value: any, rawRule: ObjectRule, attrPath: AttrPath): string | null {
   const rule = Object.assign({}, {
     allowNull: false,
@@ -161,7 +167,10 @@ export function handlerSwitch(value: any, rule: Rule, attrPath: AttrPath = new A
       break;
     case 'object':
       err = objectHandler(value, rule, attrPath);
-      break
+      break;
+    case 'simpleArray':
+      err = simpleArrayHandler(value, rule, attrPath);
+      break;
   }
   return err || null;
 }

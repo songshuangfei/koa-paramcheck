@@ -1,10 +1,10 @@
 /**
  * koa-paramcheck
  */
-import { ObjectRule, ArrayRule } from './type/rules';
+import { ObjectRule, ArrayRule, QueryRule } from './type/rules';
 import { handlerSwitch } from './handler';
-import { parseJSONBody, resBadRequest } from './utils';
-import { KoaMiddleware } from './type/middleware';
+import { parseJSONBody, resBadRequest, queryObjectToJSON } from './utils';
+import { KoaMiddleware, KoaDefaultCtx } from './type/middleware';
 
 declare module 'koa' {
   interface Request {
@@ -13,6 +13,14 @@ declare module 'koa' {
       query?: any,
       body?: any
     }
+  }
+}
+
+function setParams(ctx: KoaDefaultCtx, val: any, type: 'query' | 'body') {
+  if (ctx.request.passedParams) {
+    ctx.request.passedParams[type] = val;
+  } else {
+    ctx.request.passedParams = { [type]: val };
   }
 }
 
@@ -27,8 +35,27 @@ export function jsonBodyCheck(rootRule: ObjectRule | ArrayRule): KoaMiddleware {
     if (errMsg) {
       resBadRequest('body', ctx, errMsg);
     } else {
-      ctx.request.passedParams = { body: parsedJSON }
+      setParams(ctx, parsedJSON, 'body');
       await next();
+    }
+  }
+}
+
+export function queryCheck(rule: QueryRule): KoaMiddleware {
+  return async (ctx, next) => {
+    const qobj = queryObjectToJSON(rule, ctx.query);
+    const errMsg = handlerSwitch(qobj, {
+      type: 'object',
+      allowNull: false,
+      properties: rule.properties,
+      requiredKeys: rule.requiredKeys || [],
+      allowOtherKeys: true,
+    });
+    if (errMsg) {
+      resBadRequest('query', ctx, errMsg);
+    } else {
+      setParams(ctx, qobj, 'query');
+      await next()
     }
   }
 }

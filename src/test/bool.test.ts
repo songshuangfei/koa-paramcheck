@@ -20,6 +20,6 @@ describe('boolean handler', () => {
   });
 
   it('provide string', () => {
-    assert.strictEqual(handlerSwitch('true', {type: 'boolean'}, path), `${path.join()} ${BoolErrors.NOT_A_BOOL}`);
+    assert.strictEqual(handlerSwitch('true', { type: 'boolean' }, path), `${path.join()} ${BoolErrors.NOT_A_BOOL}`);
   });
 });

@@ -5,10 +5,10 @@ export {
   AnyRule,
   ArrayRule,
   ObjectRule,
-  Rule
 } from './type/rules';
 
 export {
-  jsonBodyCheck
+  jsonBodyCheck,
+  queryCheck
 } from './middleware'
 

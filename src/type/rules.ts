@@ -2,6 +2,7 @@ type DateType = 'string'
   | 'number'
   | 'boolean'
   | 'array'
+  | 'simpleArray'
   | 'object'
   | 'any';
 
@@ -39,6 +40,12 @@ export interface ArrayRule extends RuleBase {
   allowEmpty?: boolean
 }
 
+export interface SimpleArrayRule extends RuleBase {
+  type: 'simpleArray',
+  itemRule: StringRule | BoolRule | NumberRule,
+  allowEmpty?: boolean
+}
+
 export interface ObjectRule extends RuleBase {
   type: 'object',
   properties: {
@@ -48,4 +55,12 @@ export interface ObjectRule extends RuleBase {
   allowOtherKeys?: boolean,
 }
 
-export type Rule = StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule;
+export type Rule = StringRule | NumberRule | BoolRule | ArrayRule | ObjectRule | AnyRule | SimpleArrayRule;
+
+// query rules
+export interface QueryRule {
+  properties: {
+    [key: string]: StringRule | BoolRule | NumberRule | SimpleArrayRule,
+  },
+  requiredKeys?: string[],
+}

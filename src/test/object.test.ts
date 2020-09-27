@@ -16,7 +16,7 @@ describe('object handler', () => {
   it('do not allow null, provide null', () => {
     assert.strictEqual(handlerSwitch(null, {
       type: 'object',
-      properties:{},
+      properties: {},
       allowNull: false
     }, path), `${path.join()} ${ObjectErrors.DO_NOT_ALLOW_NULL}`);
   });
@@ -30,22 +30,22 @@ describe('object handler', () => {
   });
 
   it('required key', () => {
-    assert.strictEqual(handlerSwitch({y:{}}, {
+    assert.strictEqual(handlerSwitch({ y: {} }, {
       type: 'object',
-      properties: { 
+      properties: {
         x: { type: 'number' },
-        y:{
-          type:'object',
-          properties:{
-            z:{type:'number'},
+        y: {
+          type: 'object',
+          properties: {
+            z: { type: 'number' },
           },
-          requiredKeys:['z']
+          requiredKeys: ['z']
         }
       },
       allowNull: false,
-      requiredKeys:['x']
-    }, path), `x ${ObjectErrors.KEY_REQUIRED}; `+
-      `y.z ${ObjectErrors.KEY_REQUIRED}`
+      requiredKeys: ['x']
+    }, path), `x ${ObjectErrors.KEY_REQUIRED}; ` +
+    `y.z ${ObjectErrors.KEY_REQUIRED}`
     );
   });
 
@@ -73,9 +73,9 @@ describe('object handler', () => {
     assert.strictEqual(handlerSwitch({ a: '1', b: '2' }, {
       type: 'object',
       properties: {
-        x: { type: 'string'},
-        y: { type: 'string'},
-        z: { type: 'string'},
+        x: { type: 'string' },
+        y: { type: 'string' },
+        z: { type: 'string' },
       },
       allowNull: false,
       allowOtherKeys: false
@@ -88,7 +88,7 @@ describe('object handler', () => {
       properties: {
         a: {
           type: 'array',
-          itemRule: {type:'number'}
+          itemRule: { type: 'number' }
         }
       },
       allowNull: false,

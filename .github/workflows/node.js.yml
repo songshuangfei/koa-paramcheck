@@ -1,11 +1,11 @@
-name: Node.js CI
+name: build
 
 on:
   [push, pull_request]
   
 jobs:
   build:
-
+    
     runs-on: ubuntu-latest
 
     strategy:
@@ -19,5 +19,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: yarn install
-    - run: npm run build
     - run: npm test
+    - run: npm run build

@@ -33,7 +33,7 @@ describe('string handler', () => {
     assert.strictEqual(handlerSwitch('abc', {
       type: 'string',
       allowNull: false,
-      regExp: /[0-9]+/,
+      pattern: /[0-9]+/,
       message: '{{path}} must be number'
     }, path), `${path.join()} must be number`);
   });
@@ -42,7 +42,7 @@ describe('string handler', () => {
     assert.strictEqual(handlerSwitch('abc', {
       type: 'string',
       allowNull: false,
-      regExp: /[0-9]+/,
+      pattern: /[0-9]+/,
     }, path), `${path.join()} ${StringErrors.DO_NOT_MATCH_REGEXP} ${/[0-9]+/.toString()}`);
   });
 

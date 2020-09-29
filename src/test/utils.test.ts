@@ -34,7 +34,7 @@ describe('utils', () => {
           },
           allowEmpty: true
         },
-        name: { type: 'string', regExp: /[a-z]+/ },
+        name: { type: 'string', pattern: /[a-z]+/ },
         bool: { type: 'boolean' },
         age: { type: 'number' }
       }

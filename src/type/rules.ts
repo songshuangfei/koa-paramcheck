@@ -13,7 +13,7 @@ interface RuleBase {
 
 export interface StringRule extends RuleBase {
   type: 'string',
-  regExp?: RegExp,
+  pattern?: RegExp,
   message?: string,
   allowSpace?: boolean,
   allowEmpty?: boolean

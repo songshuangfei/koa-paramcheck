@@ -42,11 +42,11 @@ export function stringHandler(value: any, rawRule: StringRule, attrPath: AttrPat
   //verify
   if (typeof value !== 'string')
     return getStringErrInfo(attrPath.join(), StringErrors.NOT_A_STRING);
-  if (rule.regExp && !rule.regExp.test(value)) {
+  if (rule.pattern && !rule.pattern.test(value)) {
     if (rule.message)
       return rule.message.replace('{{path}}', attrPath.join());
     else
-      return getStringErrInfo(attrPath.join(), StringErrors.DO_NOT_MATCH_REGEXP, rule.regExp.toString());
+      return getStringErrInfo(attrPath.join(), StringErrors.DO_NOT_MATCH_REGEXP, rule.pattern.toString());
   }
   if (!rule.allowSpace && removeStrSpace(value).length !== value.length)
     return getStringErrInfo(attrPath.join(), StringErrors.DO_NOT_ALLOW_SPACE);
@@ -105,7 +105,7 @@ function arrayHandler(value: any, rawRule: ArrayRule, attrPath: AttrPath): strin
   return errors.length ? errors.join('; ') : null;
 }
 
-// the item of a simple array can only be boolean, string, or number  
+// The item of a simple array can only be boolean, string, and number.
 function simpleArrayHandler(value: any, rawRule: SimpleArrayRule, attrPath: AttrPath): string | null {
   return arrayHandler(value, { ...rawRule, type: 'array' }, attrPath)
 }

@@ -56,8 +56,8 @@ body: {"queryErrors":"pageSize does not in range [1, 20]"}
 ```
 
 ## Documentation
-* [Guide](https://github.com/songshuangfei/koa-paramcheck/blob/master/doc/guide.md)
-* [API](https://github.com/songshuangfei/koa-paramcheck/blob/master/doc/API.md)
+* [Guide](doc/guide.md)
+* [API](doc/API.md)
 
 ## License
 MIT

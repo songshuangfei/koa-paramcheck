@@ -78,7 +78,7 @@ app.listen(3000);
 Let's define some complex rules in typescript.
 ```ts
 // middlewares.ts
-import { jsonBodyCheck, StringRule, ObjectRule, NumberRule } from 'koa-paramcheck';
+import { jsonBodyCheck, StringRule, ObjectRule, NumberRule, queryCheck } from 'koa-paramcheck';
 
 const phoneNumberRule: StringRule = {
   type: 'string',
@@ -108,13 +108,14 @@ const contactRule: ObjectRule = {
   type: 'object',
   properties: {
     name: nameRule,
+    age: ageRule,
     email: emailRule,
     phoneNumber: phoneNumberRule
   },
   requiredKeys: ['name', 'email']
 };
 
-export const checkMailList = jsonBodyCheck({
+export const checkContacts = jsonBodyCheck({
   type: 'object',
   properties: {
     contacts: {
@@ -128,7 +129,47 @@ export const checkMailList = jsonBodyCheck({
   },
   requiredKeys:['contacts']
 });
+
+export const searchCheck = queryCheck({
+  properties: {
+    keyword: {
+      type: 'string',
+      allowEmpty: false
+    },
+    page: {
+      type: 'number',
+      min: 1
+    },
+    pageSize: {
+      type: 'number',
+      min: 1,
+      max: 20
+    }
+  },
+  requiredKeys: ['page', 'pageSize']
+});
 ```
 
-## API
-* [API](https://github.com/songshuangfei/koa-paramcheck/blob/master/doc/API.md)
+## With koa-router
+```ts
+import Koa from 'koa';
+import Router from 'koa-router';
+import { checkContacts, searchCheck } from './middlewares';
+
+const app = new Koa();
+const router = new Router();
+
+router.post('/contacts', checkContacts, async (ctx) => {
+  console.log(ctx.request.passedParams?.body);
+  ctx.body = 'succeed';
+});
+
+router.get('/search', searchCheck, async (ctx) => {
+  console.log(ctx.request.passedParams?.query);
+  ctx.body = 'succeed';
+});
+
+app.use(router.routes())
+
+app.listen(3000);
+```
